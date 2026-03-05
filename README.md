@@ -15,11 +15,11 @@
 A CAPTCHA test is designed to distinguish whether a user is human or a bot. A CAPTCHA test can range from a tick the box to typing characters you see in the image. These tests are an effective yet simple prevention against malicious bot actions such as spamming and brute-forcing.
 
 Example CAPTCHA illustration:
-![handmade captcha test illustration](/cache illustration.png "handmade captcha test illustration")
+![handmade captcha test illustration](cache-illustration.png "handmade captcha test illustration")
 
 Although its security benefits, CAPTCHA tests are not implemented at every point of interaction with the web to avoid interrupting user flow. Hence, these tests have trigger conditions which automatically start them. Our service has 5 trigger conditions which are explained in detail in the following section.
 
-![handmade trigger conditions diagram](/trigger diagram.png "handmade trigger conditions diagram")
+![handmade trigger conditions diagram](/trigger-diagram.png "handmade trigger conditions diagram")
 
 Note:
 The numbering of conditions in the diagram reflects the order of explanations in this document. All conditions are evaluated independently and not in a sequential order.
@@ -30,82 +30,84 @@ Our service shows a CAPTCHA if any of these 5 scenarios occur:
 
 1. High request volume from the same IP address
 
-Condition:
+**Condition:**
 More than 500 requests from the same IP address in less than 20 minutes.
 
-Purpose:
+**Purpose:**
 Prevents automated attacks from the same device.
 Prevents Brute Force and automated attacks from the same device.
 
-Example Scenarios:
+**Example Scenarios:**
 
 
-Update thresholds:
-The threshold for both the maximum amount of requests and the timespan can be updated.
+**Update thresholds:**
+The threshold for both the maximum amount of requests and the timespan can be updated. <br>
 See: config/capctha/rate-limit.yaml
 
 
 2. Request from IP address in blacklist
 
-Condition:
+**Condition:**
 If the IP address from which the request is received is found in the blacklist.
 
-Purpose:
+**Purpose:**
 Blocks requests from known and identified attackers, flagged sources, spam etc.
 
-Example Scenarios:
+**Example Scenarios:**
 
-Update Blacklist:
+**Update Blacklist:**
 Blacklist is managed in: Admin Panel -> Security -> IP Blacklist where IP addresses can be added and removed.
 
 3. Abnormally high traffic
 
-Condition:
+**Condition:**
 If within the current hour more than double the average amount of requests are made for that hour compared to the last 2 weeks.
 
-Purpose:
+**Purpose:**
 Detects unusual traffic peaks caused by multiple devices.
 
-Example Scenarios:
+**Example Scenarios:**
 
-Update:
+**Update:**
 
 4. Repeated Payloads
-Condition:
+**Condition:**
 If the same payload has been sent more than 5 times in the last 30 seconds.
 
-Purpose:
+**Purpose:**
 
-Example Scenarios:
+**Example Scenarios:**
+
+```json
 // Example payload structure
 {
 "email": "...",
 "comment": "...",
 "date": "..."
 }
+```
 
-
-Update thresholds:
-The threshold for both the maximum amount of requests and the timespan can be updated.
+**Update thresholds:**
+The threshold for both the maximum amount of requests and the timespan can be updated. <br>
 See: config/capctha/rate-limit.yaml
 
 5. Admin Enabled
 
-Condition:
+**Condition:**
 If the CAPTCHA has been enabled manually via the admin panel for certain requests.
 
-Purpose:
+**Purpose:**
 
-Example Scenarios:
+**Example Scenarios:**
 
-Update Selection of Request:
+**Update Selection of Request:**
 To manage which request should trigger the CAPTCHA: 
 Security -> Admin Panel -> -> CAPTCHA Triggers
 
 #### Troubleshooting and FAQ
 * CAPTCHA not appearing for testing
 
-CAPTCHA does not appear if the 5 conditions in the “Trigger Conditions” (add link) are not met. The easiest way to test CAPTCHA behaviour internally would be to enable it via Admin Panel.
+CAPTCHA does not appear if the 5 conditions in the “Trigger Conditions” (add link) are not met. The easiest way to test CAPTCHA behaviour internally would be to enable it via Admin Panel.<br>
 See: ashjfskdfs
 
 Other testing methods include:
@@ -128,16 +130,16 @@ As technologies such as AI continue to improve, traditional CAPTCHA tests become
 
 
 
-Machine Learning Based Behaviour Detection
-Lightweight ML models that analyze request patterns and timing is being explored to differentiate between real users and bots
+**Machine Learning Based Behaviour Detection**<br>
+Lightweight ML models that analyze request patterns and timing is being explored to differentiate between real users and bots <br>
 See: (placeholder link to project)
 
-Optional 2 Factor Verification for Account Creation
-The JetBrains service may introduce phone number verification or another form of 2FA during account creation to reduce account base abuse across the service.
+**Optional 2 Factor Verification for Account Creation**<br>
+The JetBrains service may introduce phone number verification or another form of 2FA during account creation to reduce account base abuse across the service.<br>
 See: (placeholder link to project)
 
-Proof of Work Puzzle
-A potential alternative to traditional CAPTCHA is a lightweight client side PoW challenge, where the browser performs a small computational task before a request proceeds. This increases the cost of automated attacks without impacting typical users.
+**Proof of Work Puzzle**<br>
+A potential alternative to traditional CAPTCHA is a lightweight client side PoW challenge, where the browser performs a small computational task before a request proceeds. This increases the cost of automated attacks without impacting typical users. <br>
 See: (placeholder link to project)
 
 ## Admin Panel
