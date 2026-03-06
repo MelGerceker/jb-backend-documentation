@@ -12,20 +12,20 @@
 ### CAPTCHA
 
 #### Overview
-A CAPTCHA test is designed to distinguish whether a user is human or a bot. A CAPTCHA test can range from a tick the box to typing characters you see in the image. These tests are an effective yet simple prevention against malicious bot actions such as spamming and brute-forcing.
+A CAPTCHA test is designed to distinguish whether a user is human or a bot. The tests can range from a tick the box to typing characters you see in the image and much more. These tests are an effective yet simple prevention against malicious bot actions such as spamming and brute-forcing.
 
 Example CAPTCHA illustration:
 ![handmade captcha test illustration](cache-illustration.png "handmade captcha test illustration")
 
 Although its security benefits, CAPTCHA tests are not implemented at every point of interaction with the web to avoid interrupting user flow. Hence, these tests have trigger conditions which automatically start them. Our service has 5 trigger conditions which are explained in detail in the following section.
 
+#### Trigger Conditions
+Our service shows a CAPTCHA if any of these 5 scenarios occur:
+
 ![handmade trigger conditions diagram](/trigger-diagram.png "handmade trigger conditions diagram")
 
 Note:
-The numbering of conditions in the diagram reflects the order of explanations in this document. All conditions are evaluated independently and not in a sequential order.
-
-#### Trigger Conditions
-Our service shows a CAPTCHA if any of these 5 scenarios occur:
+The numbering of conditions in the diagram reflects the order of explanations in this document. All conditions are evaluated independently and not in a sequential order. <br>
 
 
 1. High request volume from the same IP address
@@ -34,15 +34,22 @@ Our service shows a CAPTCHA if any of these 5 scenarios occur:
 More than 500 requests from the same IP address in less than 20 minutes.
 
 **Purpose:**
-Prevents automated attacks from the same device.
-Prevents Brute Force and automated attacks from the same device.
+Prevents automated attacks from the same source.
 
-**Example Scenarios:**
+**Example scenarios:**
+**Possible malicious activity:**
+* Web crawlers and bots parsing content
+* Brute force attacks designed to exhaust service resources.
+<br>
+**Possible legitimate causes:**
+* Multiple real users accessing the service through a shared network.
+* A malfunctioning browser extension.
+* The client repeatedly sends requests.
 
 
 **Update thresholds:**
-The threshold for both the maximum amount of requests and the timespan can be updated. <br>
-See: config/capctha/rate-limit.yaml
+The request threshold and time window can be adjusted through the service configuration. <br>
+See: `config/captcha/rate-limit.yaml`
 
 
 2. Request from IP address in blacklist
@@ -53,30 +60,56 @@ If the IP address from which the request is received is found in the blacklist.
 **Purpose:**
 Blocks requests from known and identified attackers, flagged sources, spam etc.
 
-**Example Scenarios:**
+**Example scenarios:**
+* An IP address previously detected sending spam submissions.
+* Known bot networks used for automated attacks.
+
 
 **Update Blacklist:**
-Blacklist is managed in: Admin Panel -> Security -> IP Blacklist where IP addresses can be added and removed.
+The blacklist is managed through the Admin Panel. <br>
+
+Admin Panel &rarr; Security &rarr; IP Blacklist <br>
+
+Administrators can add or remove IP addresses from this list as needed.
 
 3. Abnormally high traffic
 
 **Condition:**
-If within the current hour more than double the average amount of requests are made for that hour compared to the last 2 weeks.
+If the number of requests received during the current hour exceeds twice the average number of requests for that same hour in the past 2 weeks.
 
 **Purpose:**
 Detects unusual traffic peaks caused by multiple devices.
 
 **Example Scenarios:**
+**Possible malicious activity:**
+* Distributed bots sending different requests or targeting a specific form
 
-**Update:**
+**Possible legitimate causes:**
+* A marketing campaign or social media post directing many users to the service or a specific form.
+
+**Update thresholds:**
+The time windows can parameters regarding the number of requests can be adjusted through the service configuration. <br>
+
+See: `config/captcha/traffic-monitoring.yaml`
+
 
 4. Repeated Payloads
+
 **Condition:**
-If the same payload has been sent more than 5 times in the last 30 seconds.
+If the same payload is submitted more than 5 times within 30 seconds.
 
 **Purpose:**
+Detects spam attempts where identical requests are submitted within a short time window.
 
-**Example Scenarios:**
+**Example scenarios:**
+**Possible malicious activity:**
+* A bot or script submitting identical spam messages.
+
+**Possible legitimate causes:**
+* A user repeatedly resubmitting a form due to connection issues.
+* An integration or API client retrying failed requests without modifying the payload.
+
+An example payload can look like the snippet below:
 
 ```json
 // Example payload structure
@@ -88,60 +121,81 @@ If the same payload has been sent more than 5 times in the last 30 seconds.
 ```
 
 **Update thresholds:**
-The threshold for both the maximum amount of requests and the timespan can be updated. <br>
-See: config/capctha/rate-limit.yaml
+The payload repetition threshold and time window can be adjusted through the service configuration. <br>
+See: `config/captcha/rate-limit.yaml`
 
-5. Admin Enabled
+5. Admin Enabled CAPTCHA
 
 **Condition:**
-If the CAPTCHA has been enabled manually via the admin panel for certain requests.
+If the CAPTCHA is enabled manually through the Admin Panel for certain requests.
 
 **Purpose:**
+Allows administrators to enforce CAPTCHA when additional protection is required or during testing.
 
-**Example Scenarios:**
+**Example scenarios:**
+* Suspicious traffic detected before automatic triggers have been activated.
+* Temporarily enabling CAPCTHA during a security incident.
+* Enforcing CAPTCHA on a new deployment until traffic patterns are established.
 
-**Update Selection of Request:**
-To manage which request should trigger the CAPTCHA: 
-Security -> Admin Panel -> -> CAPTCHA Triggers
+**Update selection of request:**
+Administrators can configure which requests trigger CAPTCHA through the Admin Panel. <br>
+Admin Panel &rarr; Security &rarr; CAPTCHA Triggers
 
 #### Troubleshooting and FAQ
 * CAPTCHA not appearing for testing
 
-CAPTCHA does not appear if the 5 conditions in the “Trigger Conditions” (add link) are not met. The easiest way to test CAPTCHA behaviour internally would be to enable it via Admin Panel.<br>
-See: ashjfskdfs
+CAPTCHA will not appear if none of the conditions described in the
+[Trigger Conditions](#trigger-conditions)
+section are met. The easiest way to test CAPTCHA behaviour internally is to enable it through the Admin Panel. <br>
 
-Other testing methods include:
-Simulating high request from the same IP:  high_requests.py
-Simulating repeated payloads: repeated_requests.py (link to readme.md)
+Admin Panel → Security → CAPTCHA Triggers <br>
+
+Other testing methods include simulating high request volume or repeated payloads via scripts.<br>
+
+Simulating high request from the same IP:  `high_requests.py` <br>
+Simulating repeated payloads: `repeated_requests.py`<br>
 
 * How to check which condition triggered the CAPTCHA
 
 All triggering conditions are logged temporarily (24 hours) in service request logs.
+These logs can be accessed through the [service logs](service_logs)
 
+```
 Example log entry
-Create one!!!
+{
+  "timestamp": "2026-03-08T14:22:31Z",
+  "event": "captcha_triggered",
+  "trigger_condition": "IP_RATE_LIMIT",
+  "source_ip": "192.168.10.45",
+  "request_count_last_20m": 534,
+  "endpoint": "/forms/submit"
+}
+```
 
-* Why are real users flagged as suspicious (not the best wording maybe)?
+The `trigger_condition` field indicates why the CAPTCHA was triggered.
+<br>
 
-Some situations may trigger CAPTCHA for legitimate users. These situations include using shared IP networks, automated browser extensions, and repeated submissions in a short time. (fact check this)
+* Can legitimate users trigger CAPTCHA
+
+Yes, in some situations CAPTCHA may be triggered by legitimate users. Common situations include:
+*   Shared IP networks (offices, universities, public Wi-Fi etc.)
+*   Repeated form submissions due to connection issues
+*   Automated tools or browser extensions that repeatedly retry failed submissions.
+
 
 #### Future Improvements
 As technologies such as AI continue to improve, traditional CAPTCHA tests become less of a challenge for bots to solve. To maintain long term protection, the team is evaluating additional security mechanisms to accompany or replace CAPCTHA.
-
-
+<br>
 
 **Machine Learning Based Behaviour Detection**<br>
 Lightweight ML models that analyze request patterns and timing is being explored to differentiate between real users and bots <br>
-See: (placeholder link to project)
+See: [placeholder link to project](ml-based behaviour-detection)
 
 **Optional 2 Factor Verification for Account Creation**<br>
 The JetBrains service may introduce phone number verification or another form of 2FA during account creation to reduce account base abuse across the service.<br>
-See: (placeholder link to project)
+See: [placeholder link to project](2FA-account)
 
 **Proof of Work Puzzle**<br>
 A potential alternative to traditional CAPTCHA is a lightweight client side PoW challenge, where the browser performs a small computational task before a request proceeds. This increases the cost of automated attacks without impacting typical users. <br>
-See: (placeholder link to project)
-
-## Admin Panel
-...
+See: [placeholder link to project](PoW)
 
