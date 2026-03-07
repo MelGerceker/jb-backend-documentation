@@ -1,3 +1,5 @@
+This repository contains a sample internal documentation article created for the JetBrains Web Development Backend Technical Writing internship task.
+
 # JB Service Documentation
 
 ## Accounts and Authentication
@@ -12,19 +14,25 @@
 ### CAPTCHA
 
 #### Overview
-A CAPTCHA test is designed to distinguish whether a user is human or a bot. The tests can range from a tick the box to typing characters you see in the image and much more. These tests are an effective yet simple prevention against malicious bot actions such as spamming and brute-forcing.
+A CAPTCHA test is designed to distinguish whether a user is human or a bot. These tests can range from ticking a box to typing distorted characters or completing many other interactive tasks. CAPTCHA provides a simple yet effective way to prevent automated bot actions such as spam submissions and brute-force attempts.
 
-Example CAPTCHA illustration:
-![handmade captcha test illustration](cache-illustration.png "handmade captcha test illustration")
+Example CAPTCHA illustration:  
+<p>
+<img src="/cache-illustration.png" alt="handmade captcha test illustration" width="60%">
+</p>
 
-Despite its security benefits, CAPTCHA tests are not implemented at every point of interaction with the web to avoid interrupting user flow. Hence, these tests have trigger conditions which automatically start them. Our service has 5 trigger conditions which are explained in detail in the following section.
+Despite their security benefits, CAPTCHA tests are not implemented at every point of interaction with the web to avoid interrupting user flow. Hence, these tests have trigger conditions which automatically start them. Our service has 5 trigger conditions which are explained in detail in the following section.
 
 #### Trigger Conditions
+Services evaluate several conditions to determine whether a CAPTCHA challenge should be presented.  
+
 Our service shows a CAPTCHA if any of these 5 scenarios occur:
 
-![handmade trigger conditions diagram](/trigger-diagram.png "handmade trigger conditions diagram")
+<p align="center">
+  <img src="/trigger-diagram.png" alt="handmade trigger conditions diagram" width="70%">
+</p>
 
-Note:
+**Note:**  
 The numbering of conditions in the diagram reflects the order of explanations in this document. All conditions are evaluated independently and not in a sequential order. <br>
 
 ---
@@ -58,7 +66,7 @@ See: `config/captcha/rate-limit.yaml`
 If the IP address from which the request is received is found in the blacklist.
 
 **Purpose:**
-Blocks requests from known and identified attackers, flagged sources, spam etc.
+Blocks requests from identified attackers, and from sources which have been flagged for spam submissions.
 
 **Example scenarios:**
 * An IP address previously detected sending spam submissions.
@@ -111,7 +119,6 @@ Detects spam attempts where identical requests are submitted within a short time
 An example payload can look like the snippet below:
 
 ```json
-// Example payload structure
 {
 "email": "...",
 "comment": "...",
@@ -142,7 +149,7 @@ Administrators can configure which requests trigger CAPTCHA through the Admin Pa
 Admin Panel &rarr; Security &rarr; CAPTCHA Triggers
 
 #### Troubleshooting and FAQ
-* Why is CAPTCHA not appearing for testing?
+* Why is CAPTCHA not appearing during testing?
 
 CAPTCHA will not appear if none of the conditions described in the
 [Trigger Conditions](#trigger-conditions)
@@ -150,7 +157,7 @@ section are met. The easiest way to test CAPTCHA behaviour internally is to enab
 
 Admin Panel → Security → CAPTCHA Triggers <br>
 
-Other testing methods include simulating high request volume or repeated payloads via scripts:<br>
+Other testing methods include simulating different request patterns via scripts.<br>
 
 Simulating high request from the same IP:  `high_requests.py` <br>
 Simulating repeated payloads: `repeated_requests.py`<br>
@@ -184,7 +191,7 @@ Yes, in some situations CAPTCHA may be triggered by legitimate users. Common sit
 
 
 #### Future Improvements
-As technologies such as AI continue to improve, traditional CAPTCHA tests become less of a challenge for bots to solve. To maintain long term protection, the team is evaluating additional security mechanisms to accompany or replace CAPCTHA.
+As technologies such as AI continue to improve, traditional CAPTCHA tests become less of a challenge for bots to solve. To maintain long term protection, the team is evaluating additional security mechanisms to accompany or replace CAPTCHA.
 <br>
 
 **Machine Learning Based Behaviour Detection**<br>
