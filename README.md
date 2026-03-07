@@ -79,6 +79,7 @@ The blacklist is managed through the Admin Panel. <br>
 Admin Panel &rarr; Security &rarr; IP Blacklist <br>
 
 Administrators can add or remove IP addresses from this list as needed.
+
 ---
 3. Abnormally high traffic
 ---
@@ -99,6 +100,7 @@ Detects unusual traffic peaks caused by multiple devices.
 The time window and the request threshold can be adjusted through the service configuration. <br>
 
 See: `config/captcha/traffic-monitoring.yaml`
+
 ---
 4. Repeated Payloads
 ---
@@ -129,6 +131,7 @@ An example payload can look like the snippet below:
 **Update thresholds:**
 The payload repetition threshold and time window can be adjusted through the service configuration. <br>
 See: `config/captcha/rate-limit.yaml`
+
 ---
 5. Admin Enabled CAPTCHA
 ---
@@ -161,6 +164,7 @@ Other testing methods include simulating different request patterns via scripts.
 
 Simulating high request from the same IP:  `high_requests.py` <br>
 Simulating repeated payloads: `repeated_requests.py`<br>
+
 ---
 * How to check which condition triggered the CAPTCHA?
 
@@ -181,6 +185,7 @@ Example log entry
 
 The `trigger_condition` field indicates why the CAPTCHA was triggered.
 <br>
+
 ---
 * Can legitimate users trigger CAPTCHA?
 
